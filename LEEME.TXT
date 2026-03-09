@@ -1,0 +1,128 @@
+			ACERCA DEL JUEGO
+			~~~~~~~~~~~~~~~~
+
+Agregados/Mejoras con respecto a la version anterior:
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+* Menu de comienzo
+* Activacion / desact. del sonido mediante el menu
+* Tabla de records
+* 4 Tipos distintos de bichos, que van a distintas velocidades.
+* Barra de tiempo que indica cuanto queda en las pildoras.
+* Fondo configurable en cada nivel.
+
+Falta hacer/mejorar:
+~~~~~~~~~~~~~~~~~~~
+* Presentacion!!!!!
+* Fondo del menu
+* Se podria hacer un fondo en el diplomita de la tabla de records.
+* Sonidos: Aviso de fin de pildora, fin de pildora.
+* Pildora mata-bichos
+
+"Truquitos" para probar el juego:
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+F1 Pasa de nivel
+F2 +10000 puntos
+F3 +1 Vida
+F4 -1 Vida
+
+
+
+				ACERCA DE LOS UTILITARIOS
+				~~~~~~~~~~~~~~~~~~~~~~~~~
+
+SONIDO
+~~~~~~
+Los archivos .SON son .WAV renombrados, despues tal vez le cambie el encabezado
+para que no sean iguales.
+Por ahora, basta con renombrar un .WAV a .SON para que funque (8 bits, mono,
+cualquier frecuencia)
+Los sonidos son:
+S0: Pasa de un nodo a otro
+S1: Pierde una vida
+S2: Explota un nodo de energia
+S3: Se termina totalmente un nodo de energia
+S4: Aparece el giroloco
+S5: Aviso de fin de pildora
+S6: Fin de pildora
+
+IBP
+~~~
+El formato IBP (Imagen en Bits-Plane) guarda en 4 planos una imagen de 16
+colores, sin comprimir, es lo mas rapido que hay para volcar directamente
+a la pantalla.
+Para transformar un PCX en IBP se usa PCX2IBP nombre.pcx nombre.ibp,
+por ejemplo:  PCX2IBP entorno.pcx i0.ibp
+El PCX debe estar grabado en 256 colores, pero se deben usar solo los 16 primeros,
+si el PCX esta en 16 colores, se puede usar el neopaint en 256 colores, se
+carga el archivo, se le pide que lo transforme y se vuelve a grabar.
+Los IBP se pueden ver con VERIBP, por ejemplo: VERIBP I0.IBP
+Los archivos .IBP son:
+I0: Entorno (laptop, etc.)
+I1: Pantallita de salir
+I2: Diploma con tabla de records.
+I3: Pantallita de pedir nombre para los records 
+
+F0, F1... son fondos.
+
+Las pantallas
+~~~~~~~~~~~~~
+Las pantallas se graban con un nro ficticio y despues se compaginan.
+Las pantallas se hacen con CREAPANT, que pregunta el nro ficticio de pantalla.
+Al apretar ESC, aparece una tablita para agregar o borrar bichos (EDITAR no
+esta hecho aun), y una opcion para cambiar el fondo.
+Un ejemplo de uso es: creas con el creapant las pantallas:
+10-10
+10-20
+10-30
+20-10
+20-20
+Suponete que queres intercalar una entre la 10-20 y 10-30, haces la 10-25.
+despues, basta con ejecutar JUNTAPAN para que junte todos los .PAN en el
+archivo PANT.DAT con la numeracion correcta (1.1,1.2, etc).
+
+Teclas para crear pantallas:
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+SIN PARAMETROS
+Barra espaciadora:  Borra el nodo
+A Nodo comun
+B Asesino
+C Comienzo de pantalla
+D Vida
+F Fin de pantalla
+
+CON PARAMETROS 
+K Energia (0= vacio, 12=lleno)
+L paso en 1 direccion (1=->  2=/\  3=<-  4=\/)
+M Puntos (100*parametro puntos)
+O Pildora Todos Comunes (tiempo en segundos)
+
+Ingreso de Bichos:
+~~~~~~~~~~~~~~~~~
+Los 4 tipos son:
+1=Ara¤a
+2=Vivora
+3=Caracol
+4=Tortuga
+
+La coordenada X va entre 0 y 12, la coordenada y entre 0 y 8
+
+Intel. indica la inteligencia; cada vez que llega a un nodo hace un
+nro al azar entre 0 e Intel., si el nro al azar es menor que 100,
+va para cualquier lado, si no, te persigue.
+Entonces, con intel < 100 se mueve aleatoriamente, y cuanto mas grande
+sea, mas te persigue.
+
+Aparic. es el tiempo en segundos desde el comienzo de nivel que tarda en
+aparecer.
+
+Durac. es la duracion en segundos desde la aparicion.
+
+
+Creacion/edicion de bichos
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+Los bichos se deben crear en 3 PCX de 16*16, 256 colores, mirando hacia abajo,
+con los siguientes nombres: BICHOx-1.PCX, BICHOx-2.PCX Y BICHOx-3.PCX, donde
+X indica el tipo de bicho, por ejemplo 3 para el caracol.
+Luego, el programa CREABICH.EXE se encarga automaticamente de TODO sin ningun
+parametro (lo que es la ciencia).
+ 

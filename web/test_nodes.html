@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+<head><title>Node Sprite Test</title></head>
+<body style="background:#000">
+<canvas id="c" width="640" height="350"></canvas>
+<div id="info" style="color:#fff;font-family:monospace"></div>
+<script>
+const canvas = document.getElementById('c');
+const ctx = canvas.getContext('2d');
+
+const EGA_RGB = [
+  [0x00,0x00,0x00], [0x00,0x00,0xAA], [0x00,0xAA,0x00], [0x00,0xAA,0xAA],
+  [0xAA,0x00,0x00], [0xAA,0x00,0xAA], [0xAA,0x55,0x00], [0xAA,0xAA,0xAA],
+  [0x55,0x55,0x55], [0x55,0x55,0xFF], [0x55,0xFF,0x55], [0x55,0xFF,0xFF],
+  [0xFF,0x55,0x55], [0xFF,0x55,0xFF], [0xFF,0xFF,0x55], [0xFF,0xFF,0xFF],
+];
+
+function rgbToEGA(r, g, b) {
+  let best = 0, bestDist = Infinity;
+  for (let i = 0; i < 16; i++) {
+    const dr = r - EGA_RGB[i][0], dg = g - EGA_RGB[i][1], db = b - EGA_RGB[i][2];
+    const d = dr*dr + dg*dg + db*db;
+    if (d < bestDist) { bestDist = d; best = i; }
+  }
+  return best;
+}
+
+async function test() {
+  const ns = await fetch('assets/nodes.json').then(r => r.json());
+  const info = document.getElementById('info');
+
+  // Draw backgrounds: cyan, black, red, brown
+  const bgColors = [3, 0, 4, 6]; // CYAN, BLACK, RED, BROWN
+  const spriteIndices = [1, 2, 24, 25, 36, 37, 38, 39]; // various node types
+  const RADIO_NODO_X = 7, RADIO_NODO_Y = 5;
+
+  let yOff = 10;
+  for (const bgc of bgColors) {
+    const c = EGA_RGB[bgc];
+    ctx.fillStyle = `rgb(${c[0]},${c[1]},${c[2]})`;
+    ctx.fillRect(0, yOff, 640, 40);
+
+    let xOff = 20;
+    for (const si of spriteIndices) {
+      const sprite = ns.sprites[si];
+      if (!sprite) { xOff += 40; continue; }
+
+      const px = xOff;
+      const py = yOff + 15;
+      const w = sprite.w, h = sprite.h;
+      const drawX = px - RADIO_NODO_X;
+      const drawY = py - RADIO_NODO_Y;
+
+      // Read background
+      const bgData = ctx.getImageData(drawX, drawY, w, h);
+
+      for (let p = 0; p < w * h; p++) {
+        const spriteColor = sprite.pixels[p] & 0x0F;
+        const maskColor = sprite.mask[p] & 0x0F;
+
+        const bgR = bgData.data[p * 4];
+        const bgG = bgData.data[p * 4 + 1];
+        const bgB = bgData.data[p * 4 + 2];
+        const bgEGA = rgbToEGA(bgR, bgG, bgB);
+
+        const finalColor = (bgEGA & maskColor) | spriteColor;
+
+        const fc = EGA_RGB[finalColor];
+        bgData.data[p * 4] = fc[0];
+        bgData.data[p * 4 + 1] = fc[1];
+        bgData.data[p * 4 + 2] = fc[2];
+        bgData.data[p * 4 + 3] = 255;
+      }
+
+      ctx.putImageData(bgData, drawX, drawY);
+
+      // Label
+      ctx.fillStyle = '#fff';
+      ctx.font = '8px monospace';
+      ctx.fillText(si.toString(), xOff - 3, yOff + 35);
+
+      xOff += 40;
+    }
+    yOff += 50;
+  }
+
+  // Also draw scaled-up version of sprite 1 for inspection
+  const s1 = ns.sprites[1];
+  const scale = 8;
+  yOff += 10;
+  ctx.fillStyle = '#00AAAA'; // CYAN
+  ctx.fillRect(0, yOff, s1.w * scale + 20, s1.h * scale + 20);
+
+  for (let y = 0; y < s1.h; y++) {
+    for (let x = 0; x < s1.w; x++) {
+      const spriteColor = s1.pixels[y * s1.w + x] & 0x0F;
+      const maskColor = s1.mask[y * s1.w + x] & 0x0F;
+      const finalColor = (3 & maskColor) | spriteColor; // CYAN bg
+      const fc = EGA_RGB[finalColor];
+      ctx.fillStyle = `rgb(${fc[0]},${fc[1]},${fc[2]})`;
+      ctx.fillRect(10 + x * scale, yOff + 10 + y * scale, scale - 1, scale - 1);
+    }
+  }
+
+  info.textContent = 'Node sprites rendered. Top rows: bg=CYAN, BLACK, RED, BROWN. Bottom: zoomed common node on CYAN.';
+}
+test();
+</script>
+</body>
+</html>
