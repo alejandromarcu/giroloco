@@ -244,6 +244,60 @@ function consumeKey() {
   return k;
 }
 
+// ---- Mouse/Touch handling ----
+function getCanvasPos(e) {
+  const rect = canvas.getBoundingClientRect();
+  const scaleX = 640 / rect.width;
+  const scaleY = 350 / rect.height;
+  const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+  const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+  return {
+    x: (clientX - rect.left) * scaleX,
+    y: (clientY - rect.top) * scaleY
+  };
+}
+
+function getMenuItemAt(pos) {
+  if (pos.x < 250 || pos.x > 390) return -1;
+  for (let i = 0; i < menuLabels.length; i++) {
+    const y = i * 17 + 110;
+    if (pos.y >= y && pos.y <= y + 14) return i;
+  }
+  return -1;
+}
+
+canvas.addEventListener('mousemove', (e) => {
+  if (gameState !== 'menu') return;
+  const item = getMenuItemAt(getCanvasPos(e));
+  if (item !== -1) menuOption = item;
+});
+
+canvas.addEventListener('click', (e) => {
+  if (gameState === 'menu') {
+    const item = getMenuItemAt(getCanvasPos(e));
+    if (item !== -1) {
+      menuOption = item;
+      lastKey = 'Enter';
+    }
+  } else if (['gameover', 'won', 'records', 'about', 'paused'].includes(gameState)) {
+    lastKey = 'Enter';
+  }
+});
+
+canvas.addEventListener('touchstart', (e) => {
+  e.preventDefault();
+  const pos = getCanvasPos(e);
+  if (gameState === 'menu') {
+    const item = getMenuItemAt(pos);
+    if (item !== -1) {
+      menuOption = item;
+      lastKey = 'Enter';
+    }
+  } else if (['gameover', 'won', 'records', 'about'].includes(gameState)) {
+    lastKey = 'Enter';
+  }
+}, { passive: false });
+
 // ---- Node Classes ----
 class Nodo {
   constructor(x, y, tipo, param) {
