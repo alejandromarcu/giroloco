@@ -887,7 +887,7 @@ function drawAllEnemies() {
 
 // ---- Menu ----
 let menuOption = 0;
-const menuLabels = ['Comenzar', 'Desde: 1.1', 'Sonido: SI', 'Records', 'Acerca de...', 'Salir'];
+const menuLabels = ['Comenzar', 'Desde: 1.1', 'Sonido: SI', 'Records', 'Acerca de...'];
 
 function drawMenu() {
   if (images.i4) {
@@ -1246,16 +1246,6 @@ function updateMenu(key) {
       case 2: soundEnabled = !soundEnabled; break;
       case 3: gameState = 'records'; break;
       case 4: gameState = 'about'; break;
-      case 5:
-        ctx.fillStyle = EGA[BLACK];
-        ctx.fillRect(0, 0, 640, 350);
-        ctx.fillStyle = EGA[WHITE];
-        ctx.font = '16px monospace';
-        ctx.textAlign = 'center';
-        ctx.fillText('Gracias por jugar Giroloco!', 320, 170);
-        ctx.fillText('Recarga la pagina para volver a jugar.', 320, 200);
-        gameState = 'quit';
-        break;
     }
   }
 }
